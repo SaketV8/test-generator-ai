@@ -1,4 +1,4 @@
-<h1 align="center">Test Generator LLM</h1>
+<h1 align="center">Test Generator AI</h1>
 
 <div align="center">
 <img src="https://img.shields.io/badge/License-MIT-ed8796.svg?style=for-the-badge" alt="MIT License">
