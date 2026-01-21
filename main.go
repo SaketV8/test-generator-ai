@@ -2,50 +2,224 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"strconv"
 	"time"
 
+	"github.com/SaketV8/test-generator-ai/internal/cliexecutor"
+	"github.com/SaketV8/test-generator-ai/internal/llm"
+	"github.com/SaketV8/test-generator-ai/internal/models"
 	"github.com/SaketV8/test-generator-ai/internal/utils"
+	"github.com/SaketV8/test-generator-ai/internal/utils/promptgen"
 )
 
-func main() {
-	fmt.Println("Test Generator LLM")
-	// out, err := llm.ChatWithLLM("", "", false)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(out)
+// configs
+const (
+	GEN_TEST_DIR      = "./cine-dots/pkg"
+	RUN_DIR           = "./cine-dots"
+	RUN_LOG_FILE_PATH = "./error-logs/error.log"
+	MAX_TRY           = 3
+)
 
+func GenerateTestAndSave() error {
 	spinner := utils.NewDefaultSpinner()
+
+	// =======================================================================
 	// step 1:
+	// =======================================================================
 	// build the system prompt + file_content from the project folder
-	// TODO:
-	// replace internal with the example-go-project folder
-	spinner.Suffix = " reading the files..."
+	spinner.Suffix = " Reading the project files"
 	spinner.Start()
 
 	// intentional delay
 	time.Sleep(2 * time.Second)
-	files, err := utils.ReadFolder("internal")
+
+	// files, err := promptgen.ReadFolder("./cine-dots/pkg")
+	files, err := promptgen.ReadFolder(GEN_TEST_DIR)
 	if err != nil {
-		panic(err)
+		log.Println("Error in reading the files", err)
+		return err
 	}
-	err = utils.WriteTemplateToFile(files)
+	PROJECT_FILE_CONTENT, err := promptgen.WriteTemplateToString(files)
 	if err != nil {
-		panic(err)
+		log.Println("Error in writing files to structure for the prompt", err)
+		return err
 	}
+
+	spinner.Stop()
+	fmt.Println("Reading the project files completed")
+
+	spinner.Suffix = " Preparing project files for the LLM"
+	spinner.Restart()
+	SYSTEM_PROMPT, err := utils.ReadFile("./internal/prompts/system-prompt.yaml")
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	USER_PROMPT_WITH_CODE := promptgen.USER_PROMPT_GEN_TEST + PROJECT_FILE_CONTENT
+	// utils.PrintBoxedText("USER PROMPT start")
+	// fmt.Println(USER_PROMPT_WITH_CODE)
+	// utils.PrintBoxedText("USER PROMPT end")
+	spinner.Stop()
+	fmt.Println("Preparing project files for the LLM completed")
+
+	// =======================================================================
+	// step 2:
+	// =======================================================================
+	// ask the llm to generate the test with structure output based on the prompt provided
+	spinner.Suffix = " Generating the tests"
+	spinner.Restart()
+
+	llmResponse, err := llm.ChatWithLLM(SYSTEM_PROMPT, USER_PROMPT_WITH_CODE, true)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	// utils.PrintBoxedText("LLM Response start")
+	// fmt.Println(llmResponse)
+	// utils.PrintBoxedText("LLM Response end")
+
+	spinner.Stop()
+	fmt.Println("Tests generation completed")
+
+	// =======================================================================
+	// step 3:
+	// =======================================================================
+	// parse the llm response and save the generated test
+	fmt.Println("Saving the generated test files")
+	ParseAndSaveResponses(llmResponse)
+	fmt.Println("Generated test files saved")
 	spinner.Stop()
 
-	// step 2:
-	// ask the llm to generate the test with structure output based on the prompt provided
+	return nil
+}
 
+func ParseAndSaveResponses(llmResponse string) {
+	// =======================================================================
 	// step 3:
+	// =======================================================================
 	// parse the llm response and save the generated test
+	var fileDataList []models.FileData = llm.ParseLLmOutPut(llmResponse)
+	// iterating the fileDataList and save in the file
+	for _, filedata := range fileDataList {
+		err := utils.WriteFile(GEN_TEST_DIR+"/"+filedata.Path, filedata.Content)
+		if err != nil {
+			fmt.Println("Error in writing the generated test to files", err)
+		}
 
+	}
+}
+
+func RunTest() error {
+	// =======================================================================
 	// step 4:
+	// =======================================================================
 	// run the go test against the generated test
+	err := cliexecutor.RunGoTest(RUN_DIR, RUN_LOG_FILE_PATH)
+	if err != nil {
+		log.Println("Error in RUNING THE TEST")
+		return err
+	}
+	return nil
+}
 
+func FixTest() {
+	// =======================================================================
 	// step 5:
-	// if all passed then stop
-	// else feedback loop with 3-4 retry
+	// =======================================================================
+	spinner := utils.NewDefaultSpinner()
+	spinner.Suffix = " reading the generated test files..."
+	spinner.Start()
 
+	// intentional delay
+	time.Sleep(2 * time.Second)
+	// this read value and save it in struct format <promptgen.FileData>
+	// filesTest, err := promptgen.ReadTestFolder("./cine-dots/pkg/test")
+	filesTest, err := promptgen.ReadTestFolder(GEN_TEST_DIR + "/test")
+	if err != nil {
+		panic(err)
+	}
+
+	GEN_TEST_FILE_CONTENT, err := promptgen.WriteTemplateToString(filesTest)
+	if err != nil {
+		panic(err)
+	}
+
+	// ERROR_IN_GEN_TEST_FILE, err := utils.ReadFile("./error-logs/error.log")
+	ERROR_IN_GEN_TEST_FILE, err := utils.ReadFile(RUN_LOG_FILE_PATH)
+	if err != nil {
+		log.Println("Error in reading the error generated by tests")
+	}
+
+	spinner.Stop()
+	fmt.Println("reading the generated tests files completed")
+
+	spinner.Suffix = " Preparing test files error for the LLM"
+	spinner.Restart()
+	SYSTEM_PROMPT, err := utils.ReadFile("./internal/prompts/system-prompt-fix-test.yaml")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// USER_PROMPT_WITH_CODE, err := utils.ReadFile("./internal/prompts/code-content-gen-test.yaml")
+	USER_PROMPT_WITH_CODE := promptgen.USER_PROMPT_FIX_TEST + ERROR_IN_GEN_TEST_FILE + GEN_TEST_FILE_CONTENT
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// utils.PrintBoxedText("USER PROMPT start")
+	// fmt.Println(USER_PROMPT_WITH_CODE)
+	// utils.PrintBoxedText("USER PROMPT end")
+
+	spinner.Suffix = " fixing the tests..."
+	spinner.Restart()
+	llmResponseTest, err := llm.ChatWithLLM(SYSTEM_PROMPT, USER_PROMPT_WITH_CODE, true)
+	if err != nil {
+		fmt.Println(err)
+	}
+	spinner.Stop()
+	fmt.Println("fixing tests completed")
+
+	// =======================================================================
+	// step 3:
+	// =======================================================================
+	// parse the llm response and save the generated test
+	ParseAndSaveResponses(llmResponseTest)
+
+	// =======================================================================
+	// step 4:
+	// =======================================================================
+	// run the go test against the generated test
+	if err := RunTest(); err != nil {
+		log.Println("error occured :)")
+	} else {
+		log.Println("test fix complete")
+	}
+}
+
+func main() {
+	utils.PrintBoxedText("Test Generator AI")
+	if err := GenerateTestAndSave(); err != nil {
+		log.Fatalln("Error in generating the test")
+	}
+
+	if err := RunTest(); err == nil {
+		utils.PrintBoxedText("All test passed")
+		return
+	} else {
+		log.Println("Initial test run failed")
+	}
+
+	for attempt := 1; attempt <= MAX_TRY; attempt++ {
+		utils.PrintBoxedText("Fixing the test (iteration: " + strconv.Itoa(attempt) + " )")
+		FixTest()
+		if err := RunTest(); err == nil {
+			utils.PrintBoxedText("All test passed")
+			return
+		}
+	}
+
+	utils.PrintBoxedText("Tests still failing after max retries")
 }

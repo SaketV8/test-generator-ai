@@ -41,7 +41,7 @@ func ParseLLmOutPut(llmOutput string) []models.FileData {
 		fmt.Printf("Queued file for writing: %s\n", file.Path)
 	}
 
-	fmt.Println("--------------------------")
+	// fmt.Println("--------------------------")
 
 	return filesData
 }

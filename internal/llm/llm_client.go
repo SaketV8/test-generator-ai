@@ -35,15 +35,15 @@ func ChatWithLLM(messageRoleSystem, messageRoleUser string, writeToLog bool) (st
 			Model: "openai/gpt-4.1-mini",
 			Messages: []openai.ChatCompletionMessage{
 				{
-					Role:    openai.ChatMessageRoleSystem,
-					Content: "You are an expert Go developer assistant that generates file content based on user specifications.",
-					// Content: messageRoleSystem,
+					Role: openai.ChatMessageRoleSystem,
+					// Content: "You are an expert Go developer assistant that generates file content based on user specifications.",
+					Content: messageRoleSystem,
 				},
 				{
-					Role:    openai.ChatMessageRoleUser,
-					Content: "What are your capabilities",
+					Role: openai.ChatMessageRoleUser,
+					// Content: "What are your capabilities",
 					// Content: prompts.DefaultPrompt,
-					// Content: messageRoleUser,
+					Content: messageRoleUser,
 				},
 			},
 			// Temperature: 1.0,
@@ -60,7 +60,7 @@ func ChatWithLLM(messageRoleSystem, messageRoleUser string, writeToLog bool) (st
 
 	llmOutput := resp.Choices[0].Message.Content
 	if writeToLog {
-		err = utils.WriteFile("./llmOutput/generated.txt", llmOutput)
+		err := utils.WriteFile("./llmOutput/generated.log", llmOutput)
 		if err != nil {
 			log.Fatalf("error writing file: %v", err)
 		}
