@@ -1,0 +1,621 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>handlers: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/saketV8/cine-dots/pkg/handlers/watchlist_handler.go (100.0%)</option>
+				
+				<option value="file1">github.com/saketV8/cine-dots/pkg/repositories/watchlist_repository.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package handlers
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+        "github.com/saketV8/cine-dots/pkg/models"
+        "github.com/saketV8/cine-dots/pkg/repositories"
+)
+
+type WatchListHandler struct {
+        // WatchListModel *repositories.WatchListModel
+        WatchListModel repositories.WatchListModelInterface // Interface type
+}
+
+// GET Methods
+// =====================================================================================
+
+// GetAllWatchListHandler godoc
+// @Summary      Get all Watchlists
+// @Description  Retrieves all watchlists from the database.
+// @Tags         watchlists
+// @Produce      json
+// @Success      200  {array}  models.Watchlist
+// @Failure      500  {object} gin.H  "Failed to get All WatchList"
+// @Router       /watchlist/all [get]
+func (watchListHandler *WatchListHandler) GetAllWatchListHandler(ctx *gin.Context) <span class="cov8" title="1">{
+        watchLists, err := watchListHandler.WatchListModel.GetAllWatchList()
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusInternalServerError, gin.H{
+                        "error":   "Failed to get All WatchList",
+                        "details": err.Error(),
+                })
+                return
+        }</span>
+        <span class="cov8" title="1">ctx.JSON(http.StatusOK, watchLists)</span>
+}
+
+// GetWatchedListHandler godoc
+// @Summary      Retrieve watched watchlists
+// @Description  Fetches all watchlists with a "watched" status from the database
+// @Tags         watchlists
+// @Produce      json
+// @Success      200  {array}  models.Watchlist
+// @Failure      500  {object} gin.H  "Failed to get Watched List"
+// @Router       /watchlist/watched [get]
+func (watchListHandler *WatchListHandler) GetWatchedListHandler(ctx *gin.Context) <span class="cov8" title="1">{
+        watchLists, err := watchListHandler.WatchListModel.GetWatchedList()
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusInternalServerError, gin.H{
+                        "error":   "Failed to get Watched List",
+                        "details": err.Error(),
+                })
+                return
+        }</span>
+        <span class="cov8" title="1">ctx.JSON(http.StatusOK, watchLists)</span>
+}
+
+// GetWatchingListHandler godoc
+// @Summary      Retrieve watchlists with "watching" status
+// @Description  Returns all watchlists with a "watching" status from the database
+// @Tags         watchlists
+// @Produce      json
+// @Success      200  {array}   models.Watchlist
+// @Failure      500  {object}  gin.H  "Failed to get Watching List"
+// @Router       /watchlist/watching [get]
+func (watchListHandler *WatchListHandler) GetWatchingListHandler(ctx *gin.Context) <span class="cov8" title="1">{
+        watchLists, err := watchListHandler.WatchListModel.GetWatchingList()
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusInternalServerError, gin.H{
+                        "error":   "Failed to get Watching List",
+                        "details": err.Error(),
+                })
+                return
+        }</span>
+        <span class="cov8" title="1">ctx.JSON(http.StatusOK, watchLists)</span>
+}
+
+// GetNotWatchedListHandler godoc
+// @Summary      Retrieve watchlists that are not watched
+// @Description  Returns all watchlists with a "not watched" status from the database
+// @Tags         watchlists
+// @Produce      json
+// @Success      200  {array}   models.Watchlist
+// @Failure      500  {object}  gin.H  "Failed to get Watching List"
+// @Router       /watchlist/notwatched [get]
+func (watchListHandler *WatchListHandler) GetNotWatchedListHandler(ctx *gin.Context) <span class="cov8" title="1">{
+        watchLists, err := watchListHandler.WatchListModel.GetNotWatchedList()
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusInternalServerError, gin.H{
+                        "error":   "Failed to get Watching List",
+                        "details": err.Error(),
+                })
+                return
+        }</span>
+        <span class="cov8" title="1">ctx.JSON(http.StatusOK, watchLists)</span>
+}
+
+// GetWatchListByIdHandler godoc
+// @Summary      Retrieve a watchlist by ID
+// @Description  Fetches the watchlist whose ID is provided in the path
+// @Tags         watchlists
+// @Produce      json
+// @Param        watchlist_id  path      string  true  "Watchlist ID"
+// @Success      200           {object}  models.Watchlist
+// @Failure      500           {object}  gin.H  "Failed to get WatchList by ID"
+// @Router       /watchlist/{watchlist_id} [get]
+func (watchListHandler *WatchListHandler) GetWatchListByIdHandler(ctx *gin.Context) <span class="cov8" title="1">{
+        watchlist_id_param := ctx.Param("watchlist_id")
+        watchLists, err := watchListHandler.WatchListModel.GetWatchListById(watchlist_id_param)
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusInternalServerError, gin.H{
+                        "error":   "Failed to get WatchList by ID",
+                        "details": err.Error(),
+                })
+                return
+        }</span>
+        <span class="cov8" title="1">ctx.JSON(http.StatusOK, watchLists)</span>
+}
+
+// =====================================================================================
+// =====================================================================================
+
+// Other methods
+// =====================================================================================
+
+// AddWatchListHandler godoc
+// @Summary      Create a new watchlist item
+// @Description  Adds a new watchlist entry to the database
+// @Tags         watchlists
+// @Accept       json
+// @Produce      json
+// @Param        watchlist  body      models.WatchListAddRequestExample  true  "Watchlist Data"
+// @Success      200        {object}  models.Watchlist
+// @Failure      400        {object}  gin.H  "Invalid WatchList Data"
+// @Failure      500        {object}  gin.H  "Failed to add WatchList data"
+// @Router       /watchlist/add [post]
+func (watchListHandler *WatchListHandler) AddWatchListHandler(ctx *gin.Context) <span class="cov8" title="1">{
+        //getting param from POST request body
+        var body models.Watchlist
+
+        // this will bind data coming from POST request
+        err := ctx.BindJSON(&amp;body)
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusBadRequest, gin.H{
+                        "error":   "Invalid WatchList Data",
+                        "details": err.Error(),
+                })
+                return
+        }</span>
+
+        <span class="cov8" title="1">watchListAdded, err := watchListHandler.WatchListModel.AddWatchList(body)
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusInternalServerError, gin.H{
+                        "error":   "Failed to add WatchList data",
+                        "details": err.Error(),
+                        "body":    body,
+                })
+                return
+        }</span>
+
+        <span class="cov8" title="1">ctx.JSON(http.StatusOK, watchListAdded)</span>
+}
+
+// DeleteWatchListHandler godoc
+// @Summary      Delete a watchlist entry
+// @Description  Removes a watchlist from the database based on the provided watchlist ID
+// @Tags         watchlists
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.WatchListDeleteRequest  true  "Delete Request (watchlist_id)"
+// @Success      200      {object}  gin.H  "WatchList deleted successfully"
+// @Failure      400      {object}  gin.H  "Invalid WatchList ID"
+// @Failure      500      {object}  gin.H  "Failed to delete WatchList"
+// @Router       /watchlist/delete [delete]
+func (watchListHandler *WatchListHandler) DeleteWatchListHandler(ctx *gin.Context) <span class="cov8" title="1">{
+        //getting param from POST request body
+        var body models.WatchListDeleteRequest
+
+        // this will bind data coming from POST request
+        err := ctx.BindJSON(&amp;body)
+        if err != nil </span><span class="cov8" title="1">{
+                // If binding fails, return a 400 error with the error message
+                ctx.JSON(http.StatusBadRequest, gin.H{
+                        "error":   "Invalid WatchList ID",
+                        "details": err.Error(),
+                })
+                return
+        }</span>
+
+        <span class="cov8" title="1">rowAffected, err := watchListHandler.WatchListModel.DeleteWatchList(body)
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusInternalServerError, gin.H{
+                        "error":   "Failed to delete WatchList",
+                        "details": err.Error(),
+                        "body":    body,
+                })
+                return
+        }</span>
+
+        // Add option to check if rowAffected == 0 then return Already Deleted or DATA DNE
+        <span class="cov8" title="1">ctx.JSON(http.StatusOK, gin.H{
+                "message":      "WatchList deleted successfully",
+                "row-affected": rowAffected,
+                "body":         body,
+        })</span>
+}
+
+// UpdateWatchListHandler godoc
+// @Summary      Update an existing watchlist entry
+// @Description  Updates an existing watchlist with new data
+// @Tags         watchlists
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.WatchListUpdateRequestExample  true  "Updated WatchList Data"
+// @Success      200      {object}  gin.H  "WatchList updated successfully"
+// @Failure      400      {object}  gin.H  "Invalid WatchList Data"
+// @Failure      500      {object}  gin.H  "Failed to update WatchList"
+// @Router       /watchlist/update [patch]
+func (watchListHandler *WatchListHandler) UpdateWatchListHandler(ctx *gin.Context) <span class="cov8" title="1">{
+        //getting param from POST request body
+        var body models.WatchListUpdateRequest
+
+        // this will bind data coming from POST request
+        err := ctx.BindJSON(&amp;body)
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusBadRequest, gin.H{
+                        "error":   "Invalid WatchList Data",
+                        "details": err.Error(),
+                })
+                return
+        }</span>
+
+        <span class="cov8" title="1">rowAffected, err := watchListHandler.WatchListModel.UpdateWatchList(body)
+        if err != nil </span><span class="cov8" title="1">{
+                ctx.JSON(http.StatusInternalServerError, gin.H{
+                        "error":   "Failed to update WatchList",
+                        "details": err.Error(),
+                        "body":    body,
+                })
+                return
+        }</span>
+
+        <span class="cov8" title="1">ctx.JSON(http.StatusOK, gin.H{
+                "message":      "WatchList updated successfully",
+                "row-affected": rowAffected,
+                "body":         body,
+        })</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package repositories
+
+import (
+        "database/sql"
+        "time"
+
+        "github.com/saketV8/cine-dots/pkg/models"
+)
+
+type WatchListModelInterface interface {
+        GetAllWatchList() ([]models.Watchlist, error)
+        GetWatchedList() ([]models.Watchlist, error)
+        GetWatchingList() ([]models.Watchlist, error)
+        GetNotWatchedList() ([]models.Watchlist, error)
+        GetWatchListById(watchlist_id string) (models.Watchlist, error)
+
+        AddWatchList(watchList models.Watchlist) (models.Watchlist, error)
+        DeleteWatchList(watchList models.WatchListDeleteRequest) (int, error)
+        UpdateWatchList(watchList models.WatchListUpdateRequest) (int, error)
+}
+
+type WatchListModel struct {
+        DB *sql.DB
+}
+
+func (watchListModel *WatchListModel) GetAllWatchList() ([]models.Watchlist, error) <span class="cov0" title="0">{
+        statement := `SELECT watchlist_id, title, release_year, genre, director, status, added_date FROM Watchlist;`
+
+        rows, err := watchListModel.DB.Query(statement)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // empty watchList model slice
+        <span class="cov0" title="0">watchLists := []models.Watchlist{}
+        for rows.Next() </span><span class="cov0" title="0">{
+                // empty watchList model
+                watchList := models.Watchlist{}
+
+                // setting data to the watchList model from the rows
+                err := rows.Scan(
+                        &amp;watchList.WatchlistID,
+                        &amp;watchList.Title,
+                        &amp;watchList.ReleaseYear,
+                        &amp;watchList.Genre,
+                        &amp;watchList.Director,
+                        &amp;watchList.Status,
+                        &amp;watchList.AddedDate,
+                )
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+
+                // adding watchList data to watchLists slice
+                <span class="cov0" title="0">watchLists = append(watchLists, watchList)</span>
+        }
+
+        <span class="cov0" title="0">err = rows.Err()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return watchLists, nil</span>
+}
+
+func (watchListModel *WatchListModel) GetWatchedList() ([]models.Watchlist, error) <span class="cov0" title="0">{
+        statement := `SELECT watchlist_id, title, release_year, genre, director, status, added_date FROM Watchlist WHERE status = "watched";`
+
+        rows, err := watchListModel.DB.Query(statement)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // empty watchList model slice
+        <span class="cov0" title="0">watchLists := []models.Watchlist{}
+        for rows.Next() </span><span class="cov0" title="0">{
+                // empty watchList model
+                watchList := models.Watchlist{}
+
+                // setting data to the watchList model from the rows
+                err := rows.Scan(
+                        &amp;watchList.WatchlistID,
+                        &amp;watchList.Title,
+                        &amp;watchList.ReleaseYear,
+                        &amp;watchList.Genre,
+                        &amp;watchList.Director,
+                        &amp;watchList.Status,
+                        &amp;watchList.AddedDate,
+                )
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+
+                // adding watchList data to watchLists slice
+                <span class="cov0" title="0">watchLists = append(watchLists, watchList)</span>
+        }
+
+        <span class="cov0" title="0">err = rows.Err()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return watchLists, nil</span>
+}
+
+func (watchListModel *WatchListModel) GetWatchingList() ([]models.Watchlist, error) <span class="cov0" title="0">{
+        statement := `SELECT watchlist_id, title, release_year, genre, director, status, added_date FROM Watchlist WHERE status = "watching";`
+
+        rows, err := watchListModel.DB.Query(statement)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // empty watchList model slice
+        <span class="cov0" title="0">watchLists := []models.Watchlist{}
+        for rows.Next() </span><span class="cov0" title="0">{
+                // empty watchList model
+                watchList := models.Watchlist{}
+
+                // setting data to the watchList model from the rows
+                err := rows.Scan(
+                        &amp;watchList.WatchlistID,
+                        &amp;watchList.Title,
+                        &amp;watchList.ReleaseYear,
+                        &amp;watchList.Genre,
+                        &amp;watchList.Director,
+                        &amp;watchList.Status,
+                        &amp;watchList.AddedDate,
+                )
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+
+                // adding watchList data to watchLists slice
+                <span class="cov0" title="0">watchLists = append(watchLists, watchList)</span>
+        }
+
+        <span class="cov0" title="0">err = rows.Err()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return watchLists, nil</span>
+}
+
+func (watchListModel *WatchListModel) GetNotWatchedList() ([]models.Watchlist, error) <span class="cov0" title="0">{
+        statement := `SELECT watchlist_id, title, release_year, genre, director, status, added_date FROM Watchlist WHERE status = "not watched";`
+
+        rows, err := watchListModel.DB.Query(statement)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // empty watchList model slice
+        <span class="cov0" title="0">watchLists := []models.Watchlist{}
+        for rows.Next() </span><span class="cov0" title="0">{
+                // empty watchList model
+                watchList := models.Watchlist{}
+
+                // setting data to the watchList model from the rows
+                err := rows.Scan(
+                        &amp;watchList.WatchlistID,
+                        &amp;watchList.Title,
+                        &amp;watchList.ReleaseYear,
+                        &amp;watchList.Genre,
+                        &amp;watchList.Director,
+                        &amp;watchList.Status,
+                        &amp;watchList.AddedDate,
+                )
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+
+                // adding watchList data to watchLists slice
+                <span class="cov0" title="0">watchLists = append(watchLists, watchList)</span>
+        }
+
+        <span class="cov0" title="0">err = rows.Err()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return watchLists, nil</span>
+}
+
+// GetWatchListById
+func (watchListModel *WatchListModel) GetWatchListById(watchlist_id string) (models.Watchlist, error) <span class="cov0" title="0">{
+        statement := `SELECT watchlist_id, title, release_year, genre, director, status, added_date FROM Watchlist WHERE watchlist_id = ?;`
+        // empty watchList model
+        watchList := models.Watchlist{}
+
+        err := watchListModel.DB.QueryRow(statement, watchlist_id).Scan(
+                &amp;watchList.WatchlistID,
+                &amp;watchList.Title,
+                &amp;watchList.ReleaseYear,
+                &amp;watchList.Genre,
+                &amp;watchList.Director,
+                &amp;watchList.Status,
+                &amp;watchList.AddedDate,
+        )
+        if err != nil </span><span class="cov0" title="0">{
+                return watchList, err
+        }</span>
+
+        <span class="cov0" title="0">return watchList, nil</span>
+}
+
+func (watchListModel *WatchListModel) AddWatchList(watchList models.Watchlist) (models.Watchlist, error) <span class="cov0" title="0">{
+        statement := `INSERT INTO Watchlist (title, release_year, genre, director, status) VALUES (?, ?, ?, ?, ?);`
+
+        watchListResult := models.Watchlist{}
+
+        result, err := watchListModel.DB.Exec(statement, watchList.Title, watchList.ReleaseYear, watchList.Genre, watchList.Director, watchList.Status)
+        if err != nil </span><span class="cov0" title="0">{
+                return models.Watchlist{}, err
+        }</span>
+
+        <span class="cov0" title="0">lastInsertedId, err := result.LastInsertId()
+        if err != nil </span><span class="cov0" title="0">{
+                return models.Watchlist{}, err
+        }</span>
+
+        // adding Id to model inserted autmatically by sqlite before returning to end user
+        <span class="cov0" title="0">watchListResult.WatchlistID = int(lastInsertedId)
+        watchListResult.Title = watchList.Title
+        watchListResult.ReleaseYear = watchList.ReleaseYear
+        watchListResult.Genre = watchList.Genre
+        watchListResult.Director = watchList.Director
+        watchListResult.Status = watchList.Status
+        watchListResult.AddedDate = watchList.AddedDate
+
+        return watchListResult, nil</span>
+}
+
+func (watchListModel *WatchListModel) DeleteWatchList(watchList models.WatchListDeleteRequest) (int, error) <span class="cov0" title="0">{
+        statement := `DELETE FROM Watchlist WHERE watchlist_id = ?;`
+
+        result, err := watchListModel.DB.Exec(statement, watchList.WatchlistID)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+
+        <span class="cov0" title="0">rowAffected, err := result.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+
+        <span class="cov0" title="0">return int(rowAffected), nil</span>
+}
+
+func (watchListModel *WatchListModel) UpdateWatchList(watchList models.WatchListUpdateRequest) (int, error) <span class="cov0" title="0">{
+        statement := `UPDATE Watchlist SET title = ?, release_year = ?, genre = ?, director = ?, status = ?, added_date = ? WHERE watchlist_id = ?;`
+
+        result, err := watchListModel.DB.Exec(statement, watchList.Title, watchList.ReleaseYear, watchList.Genre, watchList.Director, watchList.Status, time.Now(), watchList.WatchlistID)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+
+        <span class="cov0" title="0">rowAffected, err := result.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+
+        <span class="cov0" title="0">return int(rowAffected), nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
