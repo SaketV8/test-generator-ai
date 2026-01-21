@@ -31,12 +31,5 @@ Thumbs.db
 .idea/
 *.iml
 
-# example project
-cine-dots
-
 # extra prompt
-./internal/prompts/system-prompt-2.yaml
-./internal/prompts/system-prompt-3.yaml
-./internal/prompts/system-prompt-4.yaml
-./internal/prompts/system-prompt-5.yaml
-./internal/prompts/system-prompt-fix-test-2.yaml
+archive-prompts
