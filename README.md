@@ -36,17 +36,33 @@ cd test-generator-ai
 
 # install dependencies
 go mod download
+```
 
+### Setup Env Variable
+
+> [!IMPORTANT]  
+> get your own github personal access Token [Here](https://github.com/settings/tokens)
+
+```sh
+# rename <.env.example> to <.env>
+# and
+# set your own github_token
+
+# sample
+GITHUB_PAT=YOUR_GITHUB_PERSONAL_ACCESS_TOKEN_GOES_HERE
+```
+
+### Start the test-generator-ai
+
+```bash
 go build -o test-generator-ai
+
+# starts the test generator
+./test-generator-ai
 
 # or
 
 go run main.go
-```
-
-```bash
-# starts the test generator
-./test-generator-ai
 ```
 
 ## 🖥️ test-generator-ai in Action
