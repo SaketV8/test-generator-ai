@@ -67,8 +67,11 @@ go run main.go
 
 ## 🖥️ test-generator-ai in Action
 
+> loading may take some time, kindly wait...
+
 <div align="center">
-  <img src="./docs/assets/test-generator-ai-demo-1080.gif" alt="test-generator-ai in action gif">
+  <!-- <img src="./docs/assets/test-generator-ai-demo-1080.gif" alt="test-generator-ai in action gif"> -->
+  <img src="./docs/assets/test-generator-ai-demo-720.gif" alt="test-generator-ai in action gif">
 </div>
 
 ## 🧭 About
